@@ -1,0 +1,30 @@
+<style>
+    table, th, td {
+    border: 1px solid black;
+  }
+</style>
+
+<a>Add Store</a>
+
+<table>
+    <tr>
+        <th>SID</th>
+        <th>Location</th>
+        <th>Manager ID</th>
+        <th>Action</th>
+    </tr>
+
+    <% stores.forEach((store) => { %>
+
+    <tr>
+        <td><%= store.sid %></td>
+        <td><%= store.location %></td>
+        <td><%= store.mgrid %></td>
+        <td>Action</td>
+    </tr>
+
+    <% }) %>
+</table>
+    
+
+<a href="/">Home</a>
