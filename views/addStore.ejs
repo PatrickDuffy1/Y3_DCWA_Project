@@ -1,0 +1,21 @@
+<body>
+    <h1>Add Store</h1>
+
+    <% if(errorMessage != ""){ %>
+        <ul>
+            <li><%= errorMessage %></li>
+        </ul>
+     <% } %>
+
+    
+
+    <form action="/store/add" method="POST">
+        <label>SID:</label>
+        <input type="text" name="sid"><br>
+        <label>Location</label>
+        <input type="text" name="location"><br>
+        <label>Manager ID</label>
+        <input type="text" name="mgrid"><br>
+        <input type="submit" value="Add">
+    </form>
+</body>

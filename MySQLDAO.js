@@ -31,6 +31,45 @@ var getStores = function () {
             })
     })
 }
+
+var addStore = function (sid, location, mgrid) {
+    return new Promise((resolve, reject) => {
+        var myQuery = {
+            sql: 'INSERT INTO store VALUES (?, ?, ?)',
+            values: [sid, location, mgrid]
+        }
+        pool.query(myQuery)
+            .then((data) => {
+                resolve(data)
+            })
+            .catch(error => {
+                reject(error)
+                //console.log(error)
+            })
+    })
+
+}
+
+var findManagerById = function (mgrid) {
+    return new Promise((resolve, reject) => {
+        var myQuery = {
+            sql: 'SELECT * FROM store where mgrid = ?',
+            values: [mgrid]
+        }
+        pool.query(myQuery)
+            .then((data) => {
+                if (data.length > 0) {
+                    resolve(data);
+                } else {
+                    reject(new Error("Manager not found"));
+                }
+            })
+            .catch(error => {
+                reject(error);
+            })
+    })
+}
+
     
 
-module.exports = { getStores }
+module.exports = { getStores, addStore, findManagerById }
