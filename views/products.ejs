@@ -26,9 +26,6 @@
             <td>
                 <%= product.productdesc %>
             </td>
-            <!-- <td>
-                <%= product.supplier %>
-            </td> -->
             <td>
                 <%= product.sid %>
             </td>
@@ -38,7 +35,7 @@
             <td>
                 <%= product.Price %>
             </td>
-            <td><a href="">Delete <%= product.productdesc %></a></td>
+            <td><a href="products/delete/<%= product.pid %>">Delete <%= product.productdesc %></a></td>
         </tr>
 
         <% }) %>

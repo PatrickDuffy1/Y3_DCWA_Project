@@ -140,6 +140,16 @@ app.post('/store/edit/:sid', async (req, res) => {
     }
 })
 
+app.get('/products/delete/:pid', (req, res) => {
+    mySQLDAO.deleteProduct(req.params.pid)
+    .then((data) => {
+        res.redirect('/');
+    })
+    .catch((error) => {
+       res.render("deleteError", {"pid": req.params.pid});
+    })
+})
+
 
 app.get('/products', (req, res) => {
 
@@ -149,6 +159,10 @@ app.get('/products', (req, res) => {
 app.get('/managers', (req, res) => {
 
     res.render("managers");
+})
+
+app.get('/managers/add', (req, res) => {
+    res.render("addManager", { "errorMessage": "" })
 })
 
 app.listen(3004, () => {

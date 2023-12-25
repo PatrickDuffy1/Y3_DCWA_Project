@@ -1,0 +1,29 @@
+<body>
+    <h1>Add Manager</h1>
+
+    <% if(errorMessage != ""){ %>
+        <ul>
+            <li><%= errorMessage %></li>
+        </ul>
+     <% }else {%>
+        <ul>
+            <li>Manager ID must be 4 characters</li>
+            <li>Name must be > than 5 characters</li>
+            <li>Salary must be between 30,000 and 70,000</li>
+        </ul>
+     <% } %>
+
+    
+
+    <form action="/managers/add" method="POST">
+        <label>Manager ID:</label>
+        <input type="text" name="_id"><br>
+        <label>Name</label>
+        <input type="text" name="name"><br>
+        <label>Salary</label>
+        <input type="text" name="salary"><br>
+        <input type="submit" value="Add">
+    </form>
+
+    <a href="/">Home</a>
+</body>
