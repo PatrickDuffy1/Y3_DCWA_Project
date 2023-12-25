@@ -2,6 +2,7 @@ var express = require('express')
 var app = express()
 var express = require('express')
 var mySQLDAO = require('./MySQLDAO')
+var myMongoDbDAO = require('./mongoDbDAO')
 
 var bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -18,11 +19,24 @@ app.get('/stores', (req, res) => {
 
     mySQLDAO.getStores()
         .then((data) => {
-            res.render("stores", { "stores": data });
             console.log(data);
+            res.render("stores", { "stores": data });
         })
         .catch((error) => {
             console.log(error);
+        })
+})
+
+app.get('/managers', (req, res) => {
+
+    myMongoDbDAO.findAllManagers()
+        .then((documents) => {
+            console.log(documents);
+            res.render("managers", { "managers": documents });
+        })
+        .catch((error) => {
+            console.group(error);
+            res.send(error);
         })
 })
 
@@ -35,9 +49,6 @@ app.post('/store/add', async (req, res) => {
     let errorMessage = "An unexpected error has occured";
     let mgrid = req.body.mgrid;
 
-    console.log(await checkIfManagerIsManagingAStore(mgrid));
-    console.log("a");
-
     if ((req.body.sid).length != 5) {
         errorMessage = "Error - SID must be five characters in length";
     }
@@ -47,10 +58,11 @@ app.post('/store/add', async (req, res) => {
     else if ((req.body.location).length < 1) {
         errorMessage = "Error - Location must be at least one characters in length";
     }
-    else if(await checkIfManagerIsManagingAStore(mgrid) == true)
-    {
+    else if (await checkIfManagerIsManagingAStore(mgrid) == true) {
         errorMessage = "Error - Manager: " + mgrid + " is already managing another store";
-        console.log("Entered if");
+    }
+    else if(await checkIfManagerExists(mgrid) == false){
+        errorMessage = "Error - Manager: " + mgrid + " does not exist";
     }
     else {
         await mySQLDAO.addStore(req.body.sid, req.body.location, mgrid)
@@ -87,16 +99,31 @@ app.listen(3004, () => {
 
 async function checkIfManagerIsManagingAStore(mgrid) {
 
-let managerManagingAnotherStore = false;
+    let managerManagingAnotherStore = false;
 
     await mySQLDAO.findManagerById(mgrid)
         .then(() => {
-            console.log("True");
+            console.log("Manager manages another store");
             managerManagingAnotherStore = true;
         })
         .catch((error) => {
-            console.log("False");
+            console.log("Manager does not manage another store");
         })
 
-        return managerManagingAnotherStore;
+    return managerManagingAnotherStore;
+}
+
+async function checkIfManagerExists(mgrid) {
+
+    let managerExists = false;
+
+    await myMongoDbDAO.findManagerById(mgrid)
+        .then(() => {
+            managerExists = true;
+        })
+        .catch((error) => {
+            console.group(error);
+        })
+
+    return managerExists;
 }
