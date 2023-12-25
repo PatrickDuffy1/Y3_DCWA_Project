@@ -44,6 +44,11 @@ app.get('/store/add', (req, res) => {
     res.render("addStore", { "errorMessage": "" })
 })
 
+app.get('/store/edit/:sid', async (req, res) => {
+
+    await renderEditPage(req.params.sid, res, "");
+})
+
 app.post('/store/add', async (req, res) => {
     let error = true;
     let errorMessage = "An unexpected error has occured";
@@ -61,14 +66,14 @@ app.post('/store/add', async (req, res) => {
     else if (await checkIfManagerIsManagingAStore(mgrid) == true) {
         errorMessage = "Error - Manager: " + mgrid + " is already managing another store";
     }
-    else if(await checkIfManagerExists(mgrid) == false){
+    else if (await checkIfManagerExists(mgrid) == false) {
         errorMessage = "Error - Manager: " + mgrid + " does not exist";
     }
     else {
         await mySQLDAO.addStore(req.body.sid, req.body.location, mgrid)
             .then(() => {
                 error = false;
-                res.redirect("/");
+                res.redirect("/stores");
             })
             .catch((error) => {
 
@@ -82,6 +87,47 @@ app.post('/store/add', async (req, res) => {
         res.render("addStore", { "errorMessage": errorMessage });
     }
 })
+
+app.post('/store/edit/:sid', async (req, res) => {
+    let error = true;
+    let errorMessage = "An unexpected error has occured";
+    let mgrid = req.body.mgrid;
+    console.log("2");
+
+    if ((mgrid).length != 4) {
+        errorMessage = "Error - Manager ID must be four characters in length";
+    }
+    else if ((req.body.location).length < 1) {
+        errorMessage = "Error - Location must be at least one characters in length";
+    }
+    else if (await checkIfManagerIsManagingAStore(mgrid) == true) {
+        errorMessage = "Error - Manager: " + mgrid + " is already managing another store";
+        console.log("abc");
+    }
+    else if (await checkIfManagerExists(mgrid) == false) {
+        errorMessage = "Error - Manager: " + mgrid + " does not exist";
+    }
+    else {
+        await mySQLDAO.editStore(req.body.sid, req.body.location, mgrid)
+            .then(() => {
+                error = false;
+                res.redirect("/stores");
+            })
+            .catch((error) => {
+
+                if (error.errno == "1062") {
+                    errorMessage = "Error - SID already exists";
+                }
+            })
+    }
+
+    console.log(errorMessage);
+    if (error == true) {
+        console.log("Error");
+        renderEditPage(req.params.sid, res, errorMessage);
+    }
+})
+
 
 app.get('/products', (req, res) => {
 
@@ -126,4 +172,34 @@ async function checkIfManagerExists(mgrid) {
         })
 
     return managerExists;
+}
+
+async function getStoreById(sid) {
+
+    let storeData;
+
+    await mySQLDAO.findStoreById(sid)
+        .then((data) => {
+            storeData = data;
+        })
+        .catch((error) => {
+            storeData = [];
+        })
+
+    return storeData;
+}
+
+async function renderEditPage(sid, res, errorMessage)
+{
+    let storeData = await getStoreById(sid);
+
+    if(storeData.length > 0)
+    {
+        console.log("Store data: " + storeData[0].location);
+        res.render("editStore", { "errorMessage": errorMessage, "storeData": storeData[0]});
+    }
+    else
+    {
+        res.send("An unexpected error has occured");
+    }
 }

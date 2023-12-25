@@ -1,0 +1,22 @@
+<body>
+    <h1>Edit Store</h1>
+
+    <% if(errorMessage != ""){ %>
+        <ul>
+            <li><%= errorMessage %></li>
+        </ul>
+     <% } %>
+
+
+    
+
+    <form action="/store/edit/<%= storeData.sid %>" method="POST">
+        <label>SID:</label>
+        <input type="text" name="sid" value="<%= storeData.sid %>" readonly><br>
+        <label>Location</label>
+        <input type="text" name="location" value="<%= storeData.location %>"><br>
+        <label>Manager ID</label>
+        <input type="text" name="mgrid" value="<%= storeData.mgrid %>"><br>
+        <input type="submit" value="Edit">
+    </form>
+</body>

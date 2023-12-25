@@ -32,11 +32,44 @@ var getStores = function () {
     })
 }
 
+var findStoreById = function (sid) {
+    return new Promise((resolve, reject) => {
+        var myQuery = {
+            sql: 'Select * from store where sid = ?',
+            values: [sid]
+        }
+        pool.query(myQuery)
+            .then((data) => {
+                resolve(data);
+            })
+            .catch(error => {
+                reject(error);
+            })
+    })
+}
+
 var addStore = function (sid, location, mgrid) {
     return new Promise((resolve, reject) => {
         var myQuery = {
             sql: 'INSERT INTO store VALUES (?, ?, ?)',
             values: [sid, location, mgrid]
+        }
+        pool.query(myQuery)
+            .then((data) => {
+                resolve(data)
+            })
+            .catch(error => {
+                reject(error)
+                //console.log(error)
+            })
+    })
+}
+
+var editStore = function (sid, location, mgrid) {
+    return new Promise((resolve, reject) => {
+        var myQuery = {
+            sql: 'UPDATE store SET location = ?, mgrid = ? WHERE sid = ?;',
+            values: [location, mgrid, sid]
         }
         pool.query(myQuery)
             .then((data) => {
@@ -72,4 +105,4 @@ var findManagerById = function (mgrid) {
 
     
 
-module.exports = { getStores, addStore, findManagerById }
+module.exports = { getStores, addStore, findManagerById, findStoreById, editStore }
