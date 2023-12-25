@@ -103,6 +103,19 @@ var findManagerById = function (mgrid) {
     })
 }
 
-    
+var getProducts = function () {
+    return new Promise((resolve, reject) => {
+        pool.query('SELECT product.pid, product.productdesc, product.supplier, product_store.sid, product_store.Price, store.sid AS store_sid, store.location, store.mgrid  FROM product  LEFT OUTER JOIN product_store ON product.pid = product_store.pid  LEFT OUTER JOIN store ON product_store.sid = store.sid  ORDER BY product.pid;')
+            .then((data) => {
+                console.log("MySQLDAO Result: ", data);
+                resolve(data);
+            })
+            .catch(error => {
+                console.error("MySQLDAO Error: ", error);
+                reject(error);
+            });
+    });
+};
 
-module.exports = { getStores, addStore, findManagerById, findStoreById, editStore }
+
+module.exports = { getStores, addStore, findManagerById, findStoreById, editStore, getProducts }

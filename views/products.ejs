@@ -1,1 +1,48 @@
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+    }
+</style>
+
+<h1>Products</h1>
+
+<table>
+    <tr>
+        <th>Product ID</th>
+        <th>Description</th>
+        <th>Store ID</th>
+        <th>Location</th>
+        <th>Delete</th>
+    </tr>
+
+    <% productData.forEach((product)=> { %>
+
+        <tr>
+            <td>
+                <%= product.pid %>
+            </td>
+            <td>
+                <%= product.productdesc %>
+            </td>
+            <!-- <td>
+                <%= product.supplier %>
+            </td> -->
+            <td>
+                <%= product.sid %>
+            </td>
+            <td>
+                <%= product.location %>
+            </td>
+            <td>
+                <%= product.Price %>
+            </td>
+            <td><a href="">Delete <%= product.productdesc %></a></td>
+        </tr>
+
+        <% }) %>
+</table>
+
+
 <a href="/">Home</a>

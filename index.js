@@ -40,6 +40,18 @@ app.get('/managers', (req, res) => {
         })
 })
 
+app.get('/products', (req, res) => {
+
+    mySQLDAO.getProducts()
+        .then((data) => {
+            console.log(data);
+            res.render("products", { "productData": data});
+        })
+        .catch((error) => {
+            res.send(error);
+        })
+})
+
 app.get('/store/add', (req, res) => {
     res.render("addStore", { "errorMessage": "" })
 })
@@ -189,17 +201,14 @@ async function getStoreById(sid) {
     return storeData;
 }
 
-async function renderEditPage(sid, res, errorMessage)
-{
+async function renderEditPage(sid, res, errorMessage) {
     let storeData = await getStoreById(sid);
 
-    if(storeData.length > 0)
-    {
+    if (storeData.length > 0) {
         console.log("Store data: " + storeData[0].location);
-        res.render("editStore", { "errorMessage": errorMessage, "storeData": storeData[0]});
+        res.render("editStore", { "errorMessage": errorMessage, "storeData": storeData[0] });
     }
-    else
-    {
+    else {
         res.send("An unexpected error has occured");
     }
 }
