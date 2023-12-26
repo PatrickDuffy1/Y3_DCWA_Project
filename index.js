@@ -95,7 +95,8 @@ app.post('/store/edit/:sid', async (req, res) => {
     else if ((req.body.location).length < 1) {
         errorMessage = "Error - Location must be at least one characters in length";
     }
-    else if (await checkIfManagerIsManagingAStore(mgrid) == true) {
+    // Do not check if manager is managing another store if manager is managing the current store
+    else if (await getManagerIdOfStore(req.body.sid) != mgrid && await checkIfManagerIsManagingAStore(mgrid) == true) {
         errorMessage = "Error - Manager: " + mgrid + " is already managing another store";
     }
     else if (await checkIfManagerExists(mgrid) == false) {
@@ -179,7 +180,7 @@ app.post('/managers/add', async (req, res) => {
         errorMessage = "Error - Name must be greater than five characters in length";
     }
     else if (req.body.salary <= 30000 || req.body.salary >= 70000) {
-        errorMessage = "Error - Salary bust be between 30,000 and 70,000";
+        errorMessage = "Error - Salary must be between 30,000 and 70,000";
     }
     else {
         await myMongoDbDAO.addManager({
@@ -238,9 +239,9 @@ app.post('/managers/edit/:mgrid', async (req, res) => {
     }
 })
 
-// Start the server on port 3004
-app.listen(3004, () => {
-    console.log("Listening on port 3004");
+// Start the server on port 3000
+app.listen(3000, () => {
+    console.log("Listening on port 3000");
 });
 
 // Check MySQL Database to find if a manager is managing another store
@@ -333,4 +334,14 @@ async function renderEditManagerSalaryPage(mgrid, res, errorMessage) {
     else {
         res.send("An unexpected error has occured");
     }
+}
+
+// Gets the Manager ID of a store based on the the store's Store ID
+async function getManagerIdOfStore(sid) {
+
+    let storeData = await getStoreById(sid);
+
+    console.log(storeData[0].mgrid);
+
+    return storeData[0].mgrid;
 }
