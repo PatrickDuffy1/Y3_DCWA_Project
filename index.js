@@ -9,63 +9,38 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.set('view engine', 'ejs')
 
-
+// Home route
 app.get('/', (req, res) => {
 
     res.render("home");
 })
 
+// Stores route
 app.get('/stores', (req, res) => {
 
     mySQLDAO.getStores()
         .then((data) => {
             console.log(data);
-            res.render("stores", { "stores": data });
+            res.render("stores", { "stores": data }); // Render the stores page and pass the data returned by MySQL
         })
         .catch((error) => {
             console.log(error);
         })
 })
 
-app.get('/managers', (req, res) => {
 
-    myMongoDbDAO.findAllManagers()
-        .then((documents) => {
-            console.log(documents);
-            res.render("managers", { "managers": documents });
-        })
-        .catch((error) => {
-            console.group(error);
-            res.send(error);
-        })
-})
-
-app.get('/products', (req, res) => {
-
-    mySQLDAO.getProducts()
-        .then((data) => {
-            console.log(data);
-            res.render("products", { "productData": data});
-        })
-        .catch((error) => {
-            res.send(error);
-        })
-})
-
+// Add store route for GET
 app.get('/store/add', (req, res) => {
     res.render("addStore", { "errorMessage": "" })
 })
 
-app.get('/store/edit/:sid', async (req, res) => {
-
-    await renderEditStorePage(req.params.sid, res, "");
-})
-
+// Add store route for POST
 app.post('/store/add', async (req, res) => {
     let error = true;
     let errorMessage = "An unexpected error has occured";
     let mgrid = req.body.mgrid;
 
+    // Set error message if there is an error or add a store if there are no errors
     if ((req.body.sid).length != 5) {
         errorMessage = "Error - SID must be five characters in length";
     }
@@ -95,16 +70,25 @@ app.post('/store/add', async (req, res) => {
             })
     }
 
+    // Display current page with the appropiate error message if there was an error
     if (error == true) {
-        res.render("addStore", { "errorMessage": errorMessage });
+        res.render("addStore", { "errorMessage": errorMessage }); // Render the Add Store page and the appropriate error message
     }
 })
 
+// Edit store route for GET
+app.get('/store/edit/:sid', async (req, res) => {
+
+    await renderEditStorePage(req.params.sid, res, "");
+})
+
+// Edit store route for POST
 app.post('/store/edit/:sid', async (req, res) => {
     let error = true;
     let errorMessage = "An unexpected error has occured";
     let mgrid = req.body.mgrid;
 
+    // Set error message if there is an error or edit the store if there are no errors
     if ((mgrid).length != 4) {
         errorMessage = "Error - Manager ID must be four characters in length";
     }
@@ -113,7 +97,6 @@ app.post('/store/edit/:sid', async (req, res) => {
     }
     else if (await checkIfManagerIsManagingAStore(mgrid) == true) {
         errorMessage = "Error - Manager: " + mgrid + " is already managing another store";
-        console.log("abc");
     }
     else if (await checkIfManagerExists(mgrid) == false) {
         errorMessage = "Error - Manager: " + mgrid + " does not exist";
@@ -126,42 +109,76 @@ app.post('/store/edit/:sid', async (req, res) => {
             })
             .catch((error) => {
 
-                if (error.errno == "1062") {
+                if (error.errno == "1062") { // Error code if store id already exists in the database
                     errorMessage = "Error - SID already exists";
                 }
             })
     }
 
-    console.log(errorMessage);
+    // Display current page with the appropiate error message if there was an error
     if (error == true) {
-        console.log("Error");
-        renderEditStorePage(req.params.sid, res, errorMessage);
+        renderEditStorePage(req.params.sid, res, errorMessage); // Render the Edit Store page and the appropriate error message
     }
 })
 
-app.get('/products/delete/:pid', (req, res) => {
-    mySQLDAO.deleteProduct(req.params.pid)
-    .then((data) => {
-        res.redirect('/');
-    })
-    .catch((error) => {
-       res.render("deleteError", {"pid": req.params.pid});
-    })
+// Products route
+app.get('/products', (req, res) => {
+
+    mySQLDAO.getProducts()
+        .then((data) => {
+            console.log(data);
+            res.render("products", { "productData": data });
+        })
+        .catch((error) => {
+            res.send(error);
+        })
 })
 
+// Delete product route
+app.get('/products/delete/:pid', (req, res) => {
+    mySQLDAO.deleteProduct(req.params.pid)
+        .then(() => {
+            res.redirect('/');
+        })
+        .catch((error) => {
+            console.log(error);
+            res.render("deleteError", { "pid": req.params.pid });
+        })
+})
+
+// Managers route
+app.get('/managers', (req, res) => {
+
+    myMongoDbDAO.findAllManagers()
+        .then((documents) => {
+            console.log(documents);
+            res.render("managers", { "managers": documents });
+        })
+        .catch((error) => {
+            console.group(error);
+            res.send(error);
+        })
+})
+
+// Add manager route for GET
+app.get('/managers/add', (req, res) => {
+    res.render("addManager", { "errorMessage": "" })
+})
+
+// Add manager route for POST
 app.post('/managers/add', async (req, res) => {
     let error = true;
     let errorMessage = "An unexpected error has occured";
     let mgrid = req.body.mgrid;
 
+    // Set error message if there is an error or add a manager if there are no errors
     if ((mgrid).length != 4) {
         errorMessage = "Error - Manager ID must be four characters in length";
     }
     else if ((req.body.name).length <= 5) {
         errorMessage = "Error - Name must be greater than five characters in length";
     }
-    else if(req.body.salary <= 30000 || req.body.salary >= 70000)
-    {
+    else if (req.body.salary <= 30000 || req.body.salary >= 70000) {
         errorMessage = "Error - Salary bust be between 30,000 and 70,000";
     }
     else {
@@ -174,29 +191,32 @@ app.post('/managers/add', async (req, res) => {
                 res.redirect("/managers");
             })
             .catch((error) => {
-                if (error.message.includes("E11000")) {
+                if (error.message.includes("E11000")) { // Error code if manager id already exists in the database
                     error = true;
                     errorMessage = "Error - Manager: " + mgrid + " already exists in MongoDB";
                 }
             })
     }
 
+    // Display current page with the appropiate error message if there was an error
     if (error == true) {
-        res.render("addManager", { "errorMessage": errorMessage });
+        res.render("addManager", { "errorMessage": errorMessage }); // Render the Add Manager Store page and the appropriate error message
     }
 })
 
+// Edit manager route for GET
 app.get('/managers/edit/:mgrid', async (req, res) => {
 
     await renderEditManagerSalaryPage(req.params.mgrid, res, "");
 })
 
+// Edit manager route for POST
 app.post('/managers/edit/:mgrid', async (req, res) => {
     let error = true;
     let errorMessage = "An unexpected error has occured";
 
-    if(req.body.salary <= 30000 || req.body.salary >= 70000)
-    {
+    // Set error message if there is an error or edit the manager if there are no errors
+    if (req.body.salary <= 30000 || req.body.salary >= 70000) {
         errorMessage = "Error - Salary bust be between 30,000 and 70,000";
     }
     else {
@@ -212,30 +232,18 @@ app.post('/managers/edit/:mgrid', async (req, res) => {
             })
     }
 
+    // Display current page with the appropiate error message if there was an error
     if (error == true) {
-        renderEditManagerSalaryPage(req.params.mgrid, res, errorMessage);
+        renderEditManagerSalaryPage(req.params.mgrid, res, errorMessage); // Render the Edit Manager page and the appropriate error message
     }
 })
 
-
-app.get('/products', (req, res) => {
-
-    res.render("products");
-})
-
-app.get('/managers', (req, res) => {
-
-    res.render("managers");
-})
-
-app.get('/managers/add', (req, res) => {
-    res.render("addManager", { "errorMessage": "" })
-})
-
+// Start the server on port 3004
 app.listen(3004, () => {
     console.log("Listening on port 3004");
 });
 
+// Check MySQL Database to find if a manager is managing another store
 async function checkIfManagerIsManagingAStore(mgrid) {
 
     let managerManagingAnotherStore = false;
@@ -246,12 +254,13 @@ async function checkIfManagerIsManagingAStore(mgrid) {
             managerManagingAnotherStore = true;
         })
         .catch((error) => {
-            console.log("Manager does not manage another store");
+            console.log(error);
         })
 
     return managerManagingAnotherStore;
 }
 
+// Check MongpDB Database to find if a manager exists
 async function checkIfManagerExists(mgrid) {
 
     let managerExists = false;
@@ -261,12 +270,13 @@ async function checkIfManagerExists(mgrid) {
             managerExists = true;
         })
         .catch((error) => {
-            console.group(error);
+            console.log(error);
         })
 
     return managerExists;
 }
 
+// Retrieve store data from the MySQL Database by its Store ID
 async function getStoreById(sid) {
 
     let storeData;
@@ -282,6 +292,7 @@ async function getStoreById(sid) {
     return storeData;
 }
 
+// Retrieve manager data from the MongoDB database by its Manager ID
 async function getManagerById(mgrid) {
 
     let managerData;
@@ -297,9 +308,11 @@ async function getManagerById(mgrid) {
     return managerData;
 }
 
+// Render the edit store page
 async function renderEditStorePage(sid, res, errorMessage) {
     let storeData = await getStoreById(sid);
 
+    // Display the page if storeData is not empty
     if (storeData.length > 0) {
         console.log("Store data: " + storeData[0].location);
         res.render("editStore", { "errorMessage": errorMessage, "storeData": storeData[0] });
@@ -309,9 +322,11 @@ async function renderEditStorePage(sid, res, errorMessage) {
     }
 }
 
+// Render the edit manager salary page
 async function renderEditManagerSalaryPage(mgrid, res, errorMessage) {
     let managerData = await getManagerById(mgrid);
 
+    // Display the page if managerData is not empty
     if (managerData.length > 0) {
         res.render("editManagerSalary", { "errorMessage": errorMessage, "managerData": managerData[0] });
     }

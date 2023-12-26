@@ -1,14 +1,19 @@
+<!-- Border for the table -->
 <style>
-    table, th, td {
-    border: 1px solid black;
-  }
+    table,
+    th,
+    td {
+        border: 1px solid black;
+    }
 </style>
 
 <h1>Managers</h1>
 
+<!-- A link to add a new manager -->
 <a href="/managers/add">Add Manager (MongoDB)</a>
 
 <table>
+
     <tr>
         <th>Manager ID</th>
         <th>Name</th>
@@ -16,17 +21,32 @@
         <th>Update Salary</th>
     </tr>
 
-    <% managers.forEach((manager) => { %>
+    <!-- Iterate over all of the managers and add their details to a new row in the table -->
+    <% managers.forEach((manager)=> { %>
 
-    <tr>
-        <td><%= manager._id %></td>
-        <td><%= manager.name %></td>
-        <td><%= manager.salary %></td>
-        <td><a href="/managers/edit/<%= manager._id %>">Update Salary</a></td>
-    </tr>
+        <!-- Table row for each manager -->
+        <tr>
+            <!-- Display Manager ID -->
+            <td>
+                <%= manager._id %>
+            </td>
 
-    <% }) %>
+            <!-- Display Manager Name -->
+            <td>
+                <%= manager.name %>
+            </td>
+
+            <!-- Display Manager Salary -->
+            <td>
+                <%= manager.salary %>
+            </td>
+
+            <!-- Link to update the manager's salary -->
+            <td><a href="/managers/edit/<%= manager._id %>">Update Salary</a></td>
+        </tr>
+
+        <% }) %>
 </table>
-    
 
+<!-- Link to the home page -->
 <a href="/">Home</a>

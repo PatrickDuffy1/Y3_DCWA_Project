@@ -1,23 +1,44 @@
 <body>
     <h1>Add Store</h1>
 
-    <% if(errorMessage != ""){ %>
+    <!-- Check if there is an error message to display -->
+    <% if(errorMessage !="" ){ %>
         <ul>
-            <li><%= errorMessage %></li>
+            <!-- Display the error message -->
+            <li>
+                <%= errorMessage %>
+            </li>
         </ul>
-     <% } %>
+        <% }else { %>
+            <!-- Display requirements for manager details if there is no error message -->
+            <ul>
+                <li>SID must be 5 characters</li>
+                <li>SID must not already be assigned to another store</li>
+                <li>Manager ID must be 4 characters</li>
+                <li>Manager ID must not be assigned to another store</li>
+                <li>Manager ID must exist</li>
+                <li>Location should be at least one character in length</li>
+            </ul>
+            <% } %>
 
-    
+                <!-- Form for adding a store -->
+                <form action="/store/add" method="POST">
+                    <label>SID:</label>
+                    <!-- Input field for Store ID -->
+                    <input type="text" name="sid"><br>
 
-    <form action="/store/add" method="POST">
-        <label>SID:</label>
-        <input type="text" name="sid"><br>
-        <label>Location</label>
-        <input type="text" name="location"><br>
-        <label>Manager ID</label>
-        <input type="text" name="mgrid"><br>
-        <input type="submit" value="Add">
-    </form>
+                    <label>Location</label>
+                    <!-- Input field for Location -->
+                    <input type="text" name="location"><br>
 
-    <a href="/">Home</a>
+                    <label>Manager ID</label>
+                    <!-- Input field for Manager ID -->
+                    <input type="text" name="mgrid"><br>
+
+                    <!-- Submit button to add the manager -->
+                    <input type="submit" value="Add">
+                </form>
+
+                <!-- Link to the home page -->
+                <a href="/">Home</a>
 </body>

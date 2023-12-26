@@ -2,7 +2,7 @@ var pmysql = require('promise-mysql')
 var express = require('express')
 var app = express()
 var bodyParser = require('body-parser')
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 var pool;
 
@@ -20,6 +20,7 @@ pmysql.createPool({
         console.log("pool error:" + e)
     })
 
+// Retrieve all stores from the database
 var getStores = function () {
     return new Promise((resolve, reject) => {
         pool.query('SELECT * FROM store')
@@ -32,6 +33,7 @@ var getStores = function () {
     })
 }
 
+// Find a store by its SID
 var findStoreById = function (sid) {
     return new Promise((resolve, reject) => {
         var myQuery = {
@@ -48,6 +50,7 @@ var findStoreById = function (sid) {
     })
 }
 
+// Add a new store to the database
 var addStore = function (sid, location, mgrid) {
     return new Promise((resolve, reject) => {
         var myQuery = {
@@ -60,11 +63,11 @@ var addStore = function (sid, location, mgrid) {
             })
             .catch(error => {
                 reject(error)
-                //console.log(error)
             })
     })
 }
 
+// Edit the details of an existing store
 var editStore = function (sid, location, mgrid) {
     return new Promise((resolve, reject) => {
         var myQuery = {
@@ -77,12 +80,12 @@ var editStore = function (sid, location, mgrid) {
             })
             .catch(error => {
                 reject(error)
-                //console.log(error)
             })
     })
 
 }
 
+// Find a manager by their Manager ID
 var findManagerById = function (mgrid) {
     return new Promise((resolve, reject) => {
         var myQuery = {
@@ -91,6 +94,8 @@ var findManagerById = function (mgrid) {
         }
         pool.query(myQuery)
             .then((data) => {
+
+                // Return the data if the manager was found, otherwise return an error
                 if (data.length > 0) {
                     resolve(data);
                 } else {
@@ -103,20 +108,20 @@ var findManagerById = function (mgrid) {
     })
 }
 
+// Retrieve all products from the database
 var getProducts = function () {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => { // Join product onto product_store and onto store
         pool.query('SELECT product.pid, product.productdesc, product.supplier, product_store.sid, product_store.Price, store.sid AS store_sid, store.location, store.mgrid  FROM product  LEFT OUTER JOIN product_store ON product.pid = product_store.pid  LEFT OUTER JOIN store ON product_store.sid = store.sid  ORDER BY product.pid;')
             .then((data) => {
-                //console.log("MySQLDAO Result: ", data);
                 resolve(data);
             })
             .catch(error => {
-                //console.error("MySQLDAO Error: ", error);
                 reject(new Error("Product exists in stores"));
             });
     });
 };
 
+// Delete a product by its ID
 var deleteProduct = function (pid) {
     return new Promise((resolve, reject) => {
         var myQuery = {
@@ -125,11 +130,9 @@ var deleteProduct = function (pid) {
         }
         pool.query(myQuery)
             .then((data) => {
-                //console.log(data);
                 resolve(data);
             })
             .catch(error => {
-                //console.log(error);
                 reject(error);
             })
     })

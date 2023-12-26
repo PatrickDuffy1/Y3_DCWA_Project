@@ -1,28 +1,39 @@
 <body>
     <h1>Edit Manager Salary</h1>
 
-    <% if(errorMessage != ""){ %>
+    <!-- Check if there is an error message to display -->
+    <% if(errorMessage !="" ){ %>
         <ul>
-            <li><%= errorMessage %></li>
+            <!-- Display the error message -->
+            <li>
+                <%= errorMessage %>
+            </li>
         </ul>
-     <% }else {%>
-        <ul>
-            <li>Salary must be between 30,000 and 70,000</li>
-        </ul>
-     <% } %>
+        <% }else {%>
+            <!-- Display the manager salary requirements if there is no error message -->
+            <ul>
+                <li>Salary must be between 30,000 and 70,000</li>
+            </ul>
+            <% } %>
 
+                <!-- Form for editing a manager's salary -->
+                <form action="/managers/edit/<%= managerData._id %>" method="POST">
+                    <label>Manager ID:</label>
+                    <!-- Read only input field for Manager ID -->
+                    <input type="text" name="mgrid" value="<%= managerData._id %>" readonly><br>
 
-    
+                    <label>Name</label>
+                    <!-- Read only input field for Manager's name -->
+                    <input type="text" name="name" value="<%= managerData.name %>" readonly><br>
 
-    <form action="/managers/edit/<%= managerData._id %>" method="POST">
-        <label>Manager ID:</label>
-        <input type="text" name="mgrid" value="<%= managerData._id %>" readonly><br>
-        <label>Name</label>
-        <input type="text" name="name" value="<%= managerData.name %>" readonly><br>
-        <label>Salary</label>
-        <input type="text" name="salary" value="<%= managerData.salary %>"><br>
-        <input type="submit" value="Edit">
-    </form>
+                    <label>Salary</label>
+                    <!-- Input field for Manager's salary -->
+                    <input type="text" name="salary" value="<%= managerData.salary %>"><br>
 
-    <a href="/">Home</a>
+                    <!-- Submit button to edit the manager's salary -->
+                    <input type="submit" value="Edit">
+                </form>
+
+                <!-- Link to the home page -->
+                <a href="/">Home</a>
 </body>

@@ -1,11 +1,15 @@
+<!-- Border for the table -->
 <style>
-    table, th, td {
-    border: 1px solid black;
-  }
+    table,
+    th,
+    td {
+        border: 1px solid black;
+    }
 </style>
 
 <h1>Stores</h1>
 
+<!-- A link to add a new store -->
 <a href="/store/add">Add Store</a>
 
 <table>
@@ -16,17 +20,32 @@
         <th>Action</th>
     </tr>
 
-    <% stores.forEach((store) => { %>
+    <!-- Iterate over all of the stores and add their details to a new row in the table -->
+    <% stores.forEach((store)=> { %>
 
-    <tr>
-        <td><%= store.sid %></td>
-        <td><%= store.location %></td>
-        <td><%= store.mgrid %></td>
-        <td><a href="/store/edit/<%= store.sid %>">Update</a></td>
-    </tr>
+        <!-- Table row for each manager -->
+        <tr>
+            <!-- Display Store ID -->
+            <td>
+                <%= store.sid %>
+            </td>
 
-    <% }) %>
+            <!-- Display Store Location -->
+            <td>
+                <%= store.location %>
+            </td>
+
+            <!-- Display Manager ID of the manager managing the store -->
+            <td>
+                <%= store.mgrid %>
+            </td>
+
+            <!-- Link to update the store's details -->
+            <td><a href="/store/edit/<%= store.sid %>">Update</a></td>
+        </tr>
+
+        <% }) %>
 </table>
-    
 
+<!-- Link to the home page -->
 <a href="/">Home</a>

@@ -1,3 +1,4 @@
+<!-- Border for the table -->
 <style>
     table,
     th,
@@ -17,29 +18,42 @@
         <th>Delete</th>
     </tr>
 
+    <!-- Iterate over all of the products and add their details to a new row in the table -->
     <% productData.forEach((product)=> { %>
 
+        <!-- Table row for each product -->
         <tr>
+            <!-- Display Product ID -->
             <td>
                 <%= product.pid %>
             </td>
+
+            <!-- Display Product Description -->
             <td>
                 <%= product.productdesc %>
             </td>
+
+            <!-- Display SID of store that product is in -->
             <td>
                 <%= product.sid %>
             </td>
+
+            <!-- Display location of store that product is in -->
             <td>
                 <%= product.location %>
             </td>
+
+            <!-- Display Product Price -->
             <td>
                 <%= product.Price %>
             </td>
+
+            <!-- Link to delete the product -->
             <td><a href="products/delete/<%= product.pid %>">Delete <%= product.productdesc %></a></td>
         </tr>
 
         <% }) %>
 </table>
 
-
+<!-- Link to the home page -->
 <a href="/">Home</a>
