@@ -1,0 +1,28 @@
+<body>
+    <h1>Edit Manager Salary</h1>
+
+    <% if(errorMessage != ""){ %>
+        <ul>
+            <li><%= errorMessage %></li>
+        </ul>
+     <% }else {%>
+        <ul>
+            <li>Salary must be between 30,000 and 70,000</li>
+        </ul>
+     <% } %>
+
+
+    
+
+    <form action="/managers/edit/<%= managerData._id %>" method="POST">
+        <label>Manager ID:</label>
+        <input type="text" name="mgrid" value="<%= managerData._id %>" readonly><br>
+        <label>Name</label>
+        <input type="text" name="name" value="<%= managerData.name %>" readonly><br>
+        <label>Salary</label>
+        <input type="text" name="salary" value="<%= managerData.salary %>"><br>
+        <input type="submit" value="Edit">
+    </form>
+
+    <a href="/">Home</a>
+</body>

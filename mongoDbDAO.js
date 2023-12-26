@@ -56,5 +56,18 @@ var addManager = function (manager) {
     })
 }
 
+var updateManager = function (manager) {
+    return new Promise((resolve, reject) => {
+        coll.updateOne({ _id: manager._id }, { $set: { salary: manager.salary } })
+            .then((result) => {
+                resolve(result);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+};
 
-module.exports = { findAllManagers, findManagerById, addManager }
+
+
+module.exports = { findAllManagers, findManagerById, addManager, updateManager }

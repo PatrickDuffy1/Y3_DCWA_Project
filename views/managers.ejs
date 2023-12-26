@@ -13,6 +13,7 @@
         <th>Manager ID</th>
         <th>Name</th>
         <th>Salary</th>
+        <th>Update Salary</th>
     </tr>
 
     <% managers.forEach((manager) => { %>
@@ -21,7 +22,7 @@
         <td><%= manager._id %></td>
         <td><%= manager.name %></td>
         <td><%= manager.salary %></td>
-        <!-- <td>Update</td> -->
+        <td><a href="/managers/edit/<%= manager._id %>">Update Salary</a></td>
     </tr>
 
     <% }) %>

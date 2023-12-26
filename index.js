@@ -58,7 +58,7 @@ app.get('/store/add', (req, res) => {
 
 app.get('/store/edit/:sid', async (req, res) => {
 
-    await renderEditPage(req.params.sid, res, "");
+    await renderEditStorePage(req.params.sid, res, "");
 })
 
 app.post('/store/add', async (req, res) => {
@@ -104,7 +104,6 @@ app.post('/store/edit/:sid', async (req, res) => {
     let error = true;
     let errorMessage = "An unexpected error has occured";
     let mgrid = req.body.mgrid;
-    console.log("2");
 
     if ((mgrid).length != 4) {
         errorMessage = "Error - Manager ID must be four characters in length";
@@ -136,7 +135,7 @@ app.post('/store/edit/:sid', async (req, res) => {
     console.log(errorMessage);
     if (error == true) {
         console.log("Error");
-        renderEditPage(req.params.sid, res, errorMessage);
+        renderEditStorePage(req.params.sid, res, errorMessage);
     }
 })
 
@@ -160,7 +159,6 @@ app.post('/managers/add', async (req, res) => {
     }
     else if ((req.body.name).length <= 5) {
         errorMessage = "Error - Name must be greater than five characters in length";
-        // errorMessage = "Error - Manager: " + mgrid + " already exists in MongoDB";
     }
     else if(req.body.salary <= 30000 || req.body.salary >= 70000)
     {
@@ -185,6 +183,37 @@ app.post('/managers/add', async (req, res) => {
 
     if (error == true) {
         res.render("addManager", { "errorMessage": errorMessage });
+    }
+})
+
+app.get('/managers/edit/:mgrid', async (req, res) => {
+
+    await renderEditManagerSalaryPage(req.params.mgrid, res, "");
+})
+
+app.post('/managers/edit/:mgrid', async (req, res) => {
+    let error = true;
+    let errorMessage = "An unexpected error has occured";
+
+    if(req.body.salary <= 30000 || req.body.salary >= 70000)
+    {
+        errorMessage = "Error - Salary bust be between 30,000 and 70,000";
+    }
+    else {
+        await myMongoDbDAO.updateManager({
+            _id: req.body.mgrid,
+            salary: req.body.salary
+        })
+            .then(() => {
+                res.redirect("/managers");
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
+    if (error == true) {
+        renderEditManagerSalaryPage(req.params.mgrid, res, errorMessage);
     }
 })
 
@@ -246,19 +275,45 @@ async function getStoreById(sid) {
         .then((data) => {
             storeData = data;
         })
-        .catch((error) => {
+        .catch(() => {
             storeData = [];
         })
 
     return storeData;
 }
 
-async function renderEditPage(sid, res, errorMessage) {
+async function getManagerById(mgrid) {
+
+    let managerData;
+
+    await myMongoDbDAO.findManagerById(mgrid)
+        .then((data) => {
+            managerData = data;
+        })
+        .catch(() => {
+            managerData = [];
+        })
+
+    return managerData;
+}
+
+async function renderEditStorePage(sid, res, errorMessage) {
     let storeData = await getStoreById(sid);
 
     if (storeData.length > 0) {
         console.log("Store data: " + storeData[0].location);
         res.render("editStore", { "errorMessage": errorMessage, "storeData": storeData[0] });
+    }
+    else {
+        res.send("An unexpected error has occured");
+    }
+}
+
+async function renderEditManagerSalaryPage(mgrid, res, errorMessage) {
+    let managerData = await getManagerById(mgrid);
+
+    if (managerData.length > 0) {
+        res.render("editManagerSalary", { "errorMessage": errorMessage, "managerData": managerData[0] });
     }
     else {
         res.send("An unexpected error has occured");
