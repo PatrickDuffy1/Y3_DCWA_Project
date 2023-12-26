@@ -44,5 +44,17 @@ var findManagerById = function (mgrid) {
     })
 }
 
+var addManager = function (manager) {
+    return new Promise((resolve, reject) => {
+        coll.insertOne(manager)
+            .then((documents) => {
+                resolve(documents)
+            })
+            .catch((error) => {
+                reject(error)
+            })
+    })
+}
 
-module.exports = { findAllManagers, findManagerById }
+
+module.exports = { findAllManagers, findManagerById, addManager }

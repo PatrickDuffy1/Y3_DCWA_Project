@@ -150,6 +150,44 @@ app.get('/products/delete/:pid', (req, res) => {
     })
 })
 
+app.post('/managers/add', async (req, res) => {
+    let error = true;
+    let errorMessage = "An unexpected error has occured";
+    let mgrid = req.body.mgrid;
+
+    if ((mgrid).length != 4) {
+        errorMessage = "Error - Manager ID must be four characters in length";
+    }
+    else if ((req.body.name).length <= 5) {
+        errorMessage = "Error - Name must be greater than five characters in length";
+        // errorMessage = "Error - Manager: " + mgrid + " already exists in MongoDB";
+    }
+    else if(req.body.salary <= 30000 || req.body.salary >= 70000)
+    {
+        errorMessage = "Error - Salary bust be between 30,000 and 70,000";
+    }
+    else {
+        await myMongoDbDAO.addManager({
+            _id: req.body.mgrid,
+            name: req.body.name,
+            salary: req.body.salary
+        })
+            .then(() => {
+                res.redirect("/managers");
+            })
+            .catch((error) => {
+                if (error.message.includes("E11000")) {
+                    error = true;
+                    errorMessage = "Error - Manager: " + mgrid + " already exists in MongoDB";
+                }
+            })
+    }
+
+    if (error == true) {
+        res.render("addManager", { "errorMessage": errorMessage });
+    }
+})
+
 
 app.get('/products', (req, res) => {
 
